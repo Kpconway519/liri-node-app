@@ -2,7 +2,7 @@
 require('dotenv').config()
 
 const spotify = require("node-spotify-api");
-const bandsInTown = require("bandsintown");
+const bandsInTown = require("bandsintown")('9faf2bd4a625291d96f4ff683873d5e3');
 const omdb = require("omdb");
 const moment = require("moment");
 const axios = require("axios");
@@ -12,12 +12,18 @@ const keys = require('./keys.js')
 
 //LINK SPOTIFY, BANDS IN TOWN, AND OMDB AND TEST TO MAKE SURE THEY WORK
 
+// var newSpotifyKey = new Spotify(keys.spotify);
+
+
 let omdbKey = process.env.OMDB_KEY;
 let spotifyKey = process.env.SPOTIFY_ID;
 let bandsKey = process.env.BANDS_IN_TOWN_KEY;
 //omdb
 
-
+var Spotify = new spotify({
+    id: process.env.SPOTIFY_ID,
+    secret: process.env.SPOTIFY_SECRET
+})
 
 
 
@@ -38,18 +44,16 @@ let command5 = process.argv[6];
 
 switch (command1) {
     case "concert-this":
-        concertThis()
+        concertThis(command2)
         break;
     case "spotify-this-song":
-        spotifyThisSong()
+        spotifyThisSong(command2)
         break;
     case "movie-this":
-    movieThis(command2)
-
-
+        movieThis(command2)
         break;
     case "do-what-it-says":
-        doWhatItSays()
+        doWhatItSays(command2)
         break;
 }
 
@@ -57,100 +61,152 @@ switch (command1) {
 //AREA FOR MY FUNCTIONS
 
 
-function concertThis() {
+function concertThis(artist) {
     console.log("the function: concertThis worked!")
 
-    //FROM HOMEWORK INSTRUCTIONS: 
+    if (!artist) {
+        artist = 'skrillex'
+    }
 
-    // * This will search the Bands in Town Artist Events API (`"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"`) for an artist and render the following information about each event to the terminal:
+    let axiosRequest = `https://rest.bandsintown.com/artists/${artist}/events?app_id=%279faf2bd4a625291d96f4ff683873d5e3%27`
+    axios.get(axiosRequest).then(
+        function (response) {
+            for (i = 0; i < 5; i++) {
 
-    // * Name of the venue
+                console.log(" ")
+                console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+                console.log(" ")
+                console.log(`=-=-=-=-=-=-=-=-=-=-=-=-Concert ${i + 1}=-=-=-=-=-=-=-=-=-=-`)
+                console.log(" ")
+                console.log("=-=-=-=-=-=-=-=-=-=-=-=-Venue=-=-=-=-=-=-=-=-=-=-=-=-")
 
-    // * Venue location
+                console.log(response.data[i].venue.name)
+                console.log("=-=-=-=-=-=-=-=-=-=-=-=-City=-=-=-=-=-=-=-=-=-=-=-=-=")
 
-    // * Date of the Event (use moment to format this as "MM/DD/YYYY")
+                console.log(response.data[i].venue.city)
+                console.log("=-=-=-=-=-=-=-=-=-=-=-=-Region=-=-=-=-=-=-=-=-=-=-=-=")
+
+                console.log(response.data[i].venue.region)
+                console.log("=-=-=-=-=-=-=-=-=-=-=-=-Country=-=-=-=-=-=-=-=-=-=-=-")
+
+                console.log(response.data[i].venue.country)
+                    // * Date of the Event (use moment to format this as "MM/DD/YYYY")
+                console.log("=-=-=-=-=-=-=-=-=-=-=-=-Time and Date=-=-=-=-=-=-=-=-")
+
+                console.log(response.data[i].datetime)
+                console.log(" ")
+                console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+                console.log(" ")
+            }
+        })
 };
 
-function spotifyThisSong() {
-    console.log("the function: spotifyThisSong worked!")
-    //FROM HOMEWORK INSTRUCTIONS: 
+function spotifyThisSong(song) {
+    if (!song) {
+        song = "Jingle Bells";
+    }
+    console.log(song)
 
-    // * This will show the following information about the song in your terminal/bash window
+    Spotify.search({ type: 'track', query: song }, function (error, data) {
+        if (!error) {
+            let trackData = data.tracks.items[0];
+            console.log(" ")
+            console.log("Here is your song information:")
+            console.log(" ")
+            console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+            console.log(" ")
 
-    // * Artist(s)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Artist=-=-=-=-=-=-=-=-=-=-=-")
+            console.log(trackData.artists[0].name);
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Song=-=-=-=-=-=-=-=-=-=-=-=-")
+            console.log(trackData.name);
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Album=-=-=-=-=-=-=-=-=-=-=-=")
+            console.log(trackData.album.name);
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Preview=-=-=-=-=-=-=-=-=-=-=")
+            console.log(trackData.preview_url);
+            console.log(" ")
+            console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+            console.log(" ")
 
-    // * The song's name
-
-    // * A preview link of the song from Spotify
-
-    // * The album that the song is from
-
-    // * If no song is provided then your program will default to "The Sign" by Ace of Base.
-
-    // * You will utilize the [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) package in order to retrieve song information from the Spotify API.
-
-    // * The Spotify API requires you sign up as a developer to generate the necessary credentials. You can follow these steps in order to generate a **client id** and **client secret**:
-
-    // * Step One: Visit <https://developer.spotify.com/my-applications/#!/>
-
-    // * Step Two: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
-
-    // * Step Three: Once logged in, navigate to <https://developer.spotify.com/my-applications/#!/applications/create> to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
-
-    // * Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the [node-spotify-api package](https://www.npmjs.com/package/node-spotify-api).
-
+        } else {
+            console.log('Error occurred.');
+        }
+    });
 
 };
 
 function movieThis(movie) {
-    console.log("the function: movieThis worked!")
-    //FROM HOMEWORK INSTRUCTIONS: 
-    //weird situation update: so I can take an argument from the command line, but it still only works with "remember the titans" it's the weirdest thing.
-let testMovie = "remember+the+titans"
-    // let axiosRequest = `http://www.omdbapi.com/?t=shrek&y=&plot=short&apikey=${omdbKey}`
-    axios.get(
-        "http://www.omdbapi.com/?t=" + 
-        // testMovie 
-        movie
-        + "&y=&plot=short&apikey=" + omdbKey
-        // axiosRequest
-        ).then(
-  function(response) {
-    console.log("The movie's rating is: " + response.data.imdbRating);
-    // console.log(response)
-  }
-);
-
-
-
-
-    // * This will output the following information to your terminal/bash window:
-
-    // ```
-    //   * Title of the movie.
-    //   * Year the movie came out.
-    //   * IMDB Rating of the movie.
-    //   * Rotten Tomatoes Rating of the movie.
-    //   * Country where the movie was produced.
-    //   * Language of the movie.
-    //   * Plot of the movie.
-    //   * Actors in the movie.
-    // ```
-
-    // * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
-
-    // * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
-
-    // * It's on Netflix!
-
-    // * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
+    if (!movie) {
+        movie = "Mr. Nobody"
+    }
+    let testMovie = "remember+the+titans"
+    let axiosRequest = `http://www.omdbapi.com/?t=${movie}&y=&plot=short&apikey=${omdbKey}`
+    axios.get(axiosRequest).then(
+        function (response) {
+            console.log(" ")
+            console.log("Here is your movie information:")
+            console.log(" ")
+            console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+            console.log(" ")
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Title=-=-=-=-=-=-=-=-=-=-=-=-")
+            console.log(response.data.Title)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Year=-=-=-=-=-=-=-=-=-=-=-=-=")
+            console.log(response.data.Year)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-imdbRating=-=-=-=-=-=-=-=-=-=")
+            console.log(response.data.imdbRating)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Rotten Tomatoes Rating=-=-=-=")
+            //  console.log(response.data.Ratings[1].Value)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Country=-=-=-=-=-=-=-=-=-=-=-")
+            console.log(response.data.Country)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Language=-=-=-=-=-=-=-=-=-=-=")
+            console.log(response.data.Language)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Plot=-=-=-=-=-=-=-=-=-=-=-=-=")
+            console.log(response.data.Plot)
+            console.log("=-=-=-=-=-=-=-=-=-=-=-=-Actors=-=-=-=-=-=-=-=-=-=-=-=")
+            console.log(response.data.Actors)
+            console.log(" ")
+            console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
+            console.log(" ")
+            //  console.log(response)
+        }
+    );
 
 };
 
 function doWhatItSays() {
     console.log("the function: doWhatItSays worked!")
     //FROM HOMEWORK INSTRUCTIONS: 
+    fs.readFile("random.txt", "utf8", function(error, data) {
 
+        // If the code experiences any errors it will log the error to the console.
+        if (error) {
+          return console.log(error);
+        }
+      
+        // We will then print the contents of data
+        console.log(data);
+      
+        // Then split it by commas (to make it more readable)
+        var dataArr = data.split(",");
+      
+        // We will then re-display the content as an array for later use.
+        console.log(dataArr);
+        if (dataArr[0] === 'spotify-this-song') {
+            console.log('spotify')
+            spotifyThisSong(dataArr[1])
+        }else if (dataArr[0] === 'concert-this')
+        {
+            console.log("concert")
+            concertThis(dataArr[1])
+
+        } else if (dataArr[0] === 'movie-this') {
+            console.log("movie")
+            movieThis(dataArr[1])
+        } else {
+            console.log("I'm afraid I can't do that")
+        }
+      
+      });
 
     // * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
 
@@ -168,64 +224,5 @@ function doWhatItSays() {
 
 
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
