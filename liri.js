@@ -16,8 +16,6 @@ const keys = require('./keys.js')
 
 
 let omdbKey = process.env.OMDB_KEY;
-let spotifyKey = process.env.SPOTIFY_ID;
-let bandsKey = process.env.BANDS_IN_TOWN_KEY;
 //omdb
 
 var Spotify = new spotify({
@@ -32,9 +30,6 @@ var Spotify = new spotify({
 
 let command1 = process.argv[2];
 let command2 = process.argv[3];
-let command3 = process.argv[4];
-let command4 = process.argv[5];
-let command5 = process.argv[6];
 
 
 
@@ -72,28 +67,37 @@ function concertThis(artist) {
     axios.get(axiosRequest).then(
         function (response) {
             for (i = 0; i < 5; i++) {
-
                 console.log(" ")
                 console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
                 console.log(" ")
                 console.log(`=-=-=-=-=-=-=-=-=-=-=-=-Concert ${i + 1}=-=-=-=-=-=-=-=-=-=-`)
                 console.log(" ")
                 console.log("=-=-=-=-=-=-=-=-=-=-=-=-Venue=-=-=-=-=-=-=-=-=-=-=-=-")
-
-                console.log(response.data[i].venue.name)
+                if (!response.data[i].venue.name || response.data[i].venue.name === undefined) {
+                    console.log("===Data Not Available===")
+                } else{ 
+                    console.log(response.data[i].venue.name)
+                }
                 console.log("=-=-=-=-=-=-=-=-=-=-=-=-City=-=-=-=-=-=-=-=-=-=-=-=-=")
-
-                console.log(response.data[i].venue.city)
+                if (!response.data[i].venue.city) {
+                    console.log("===Data Not Available===")
+                } else{ 
+                    console.log(response.data[i].venue.city)
+                }
                 console.log("=-=-=-=-=-=-=-=-=-=-=-=-Region=-=-=-=-=-=-=-=-=-=-=-=")
-
-                console.log(response.data[i].venue.region)
+                if (!response.data[i].venue.region) {
+                    console.log("===Data Not Available===")
+                } else{ 
+                    console.log(response.data[i].venue.region)
+                }
                 console.log("=-=-=-=-=-=-=-=-=-=-=-=-Country=-=-=-=-=-=-=-=-=-=-=-")
-
-                console.log(response.data[i].venue.country)
-                    // * Date of the Event (use moment to format this as "MM/DD/YYYY")
+                if (!response.data[i].venue.country) {
+                    console.log("===Data Not Available===")
+                } else{ 
+                    console.log(response.data[i].venue.country)
+                }
                 console.log("=-=-=-=-=-=-=-=-=-=-=-=-Time and Date=-=-=-=-=-=-=-=-")
-
-                console.log(response.data[i].datetime)
+                console.log(moment(response.data[i].datetime).format("MMM Do YY"))
                 console.log(" ")
                 console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
                 console.log(" ")
@@ -123,7 +127,12 @@ function spotifyThisSong(song) {
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-Album=-=-=-=-=-=-=-=-=-=-=-=")
             console.log(trackData.album.name);
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-Preview=-=-=-=-=-=-=-=-=-=-=")
-            console.log(trackData.preview_url);
+            if (!trackData.preview_url) {
+                console.log("===No Preview available===")
+            }
+            else {
+                console.log(trackData.preview_url);
+            }
             console.log(" ")
             console.log("∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆˚∆")
             console.log(" ")
@@ -155,7 +164,10 @@ function movieThis(movie) {
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-imdbRating=-=-=-=-=-=-=-=-=-=")
             console.log(response.data.imdbRating)
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-Rotten Tomatoes Rating=-=-=-=")
-            //  console.log(response.data.Ratings[1].Value)
+            if (!response.data.Ratings[1].Value) {
+                console.log("No rating available")
+            }
+            console.log(response.data.Ratings[1].Value)
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-Country=-=-=-=-=-=-=-=-=-=-=-")
             console.log(response.data.Country)
             console.log("=-=-=-=-=-=-=-=-=-=-=-=-Language=-=-=-=-=-=-=-=-=-=-=")
